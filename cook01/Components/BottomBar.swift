@@ -21,7 +21,7 @@ enum Page: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .home: return "fork.knife"
+        case .home: return "fork.knife"  // 使用刀叉图标表达cook概念
         case .recipes: return "book"
         case .cooking: return "flame.fill"
         case .shopping: return "cart.fill"
@@ -34,12 +34,9 @@ struct BottomBar: View {
     @Binding var current: Page
 
     var body: some View {
-        VStack(spacing: 0) {
-            Divider()
-                .foregroundStyle(Color.orange100)
-
             HStack {
-                ForEach(Page.allCases.filter { $0 != .profile && $0 != .recipes }) { page in
+            // 明确指定要显示的三个页面：首页、烹饪、购物
+            ForEach([Page.home, Page.cooking, Page.shopping], id: \.self) { page in
                     let isActive = current == page
 
                     Button {
@@ -47,33 +44,34 @@ struct BottomBar: View {
                             current = page
                         }
                     } label: {
-                        VStack(spacing: 6) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(isActive ? Color.orange100 : Color.clear)
-                                    .frame(width: 44, height: 44)
+                        // 激活状态：深红色圆形背景
+                        if isActive {
+                                    Circle()
+                                .fill(Color.darkRed)
+                                .frame(width: UIStyle.BottomBar.activeCircleSize, height: UIStyle.BottomBar.activeCircleSize)
+                                }
 
+                        // 图标
                                 Image(systemName: page.systemImage)
-                                    .font(.system(size: 20, weight: .medium))
+                            .font(.system(size: UIStyle.BottomBar.iconSize, weight: .medium))
                                     .foregroundStyle(
-                                        isActive ? Color.orange600 : Color.gray400
+                                isActive ? Color.white : Color.gray400
                                     )
-                            }
-
-                            Text(page.title)
-                                .font(.caption2)
-                                .foregroundStyle(isActive ? Color.orange600 : Color.gray500)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
+                    .frame(height: UIStyle.BottomBar.activeCircleSize)
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 8)
-            .background(Color.white)
-        }
+        .padding(.horizontal, UIStyle.BottomBar.horizontalPadding)
+        .padding(.vertical, UIStyle.BottomBar.verticalPadding)
+            .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.BottomBar.cornerRadius, style: .continuous))
+        .padding(.horizontal, UIStyle.BottomBar.outerHorizontalPadding)
+        .padding(.bottom, UIStyle.BottomBar.bottomPadding)
+        .shadow(color: UIStyle.Shadow.color.opacity(UIStyle.Shadow.opacity), radius: UIStyle.Shadow.radius, y: UIStyle.Shadow.y)
     }
 }
 

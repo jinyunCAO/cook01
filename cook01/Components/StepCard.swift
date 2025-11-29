@@ -4,50 +4,42 @@ struct StepCard: View {
     let step: Step
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 16) {
+        HStack(alignment: .top, spacing: UIStyle.Spacing.lg) {
+            // 左侧深红色圆形数字图标（尺寸调小）
                 Circle()
-                    .fill(Color.orange500)
-                    .frame(width: 52, height: 52)
+                .fill(Color.darkRed)
+                .frame(width: 36, height: 36)
                     .overlay(
                         Text("\(step.id)")
-                            .font(.title3.bold())
+                        .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(Color.white)
                     )
 
-                VStack(alignment: .leading, spacing: 8) {
+            // 右侧内容
+            VStack(alignment: .leading, spacing: UIStyle.Spacing.sm) {
+                // 步骤描述
                     Text(step.description)
                         .font(.headline)
                         .foregroundStyle(Color.gray800)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                    HStack(spacing: 8) {
+                // 时间信息
+                HStack(spacing: UIStyle.Spacing.xs + 2) {
                         Image(systemName: "clock")
-                            .foregroundStyle(Color.orange600)
+                        .font(.caption)
+                        .foregroundStyle(Color.darkRed)
                         Text(step.duration.formattedClock)
                             .font(.subheadline)
-                            .foregroundStyle(Color.orange600)
+                        .foregroundStyle(Color.darkRed)
                     }
                 }
-            }
-
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.amber50)
-                .overlay(
-                    Text("💡 \(step.tip)")
-                        .font(.subheadline)
-                        .foregroundStyle(Color.amber700)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                )
+            
+            Spacer()
         }
-        .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.gray300, lineWidth: 1)
-        )
+        .padding(UIStyle.Padding.lg)
+        .background(Color.gray200.opacity(0.3))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
     }
 }
 

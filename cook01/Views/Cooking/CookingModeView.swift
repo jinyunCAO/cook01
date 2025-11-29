@@ -4,8 +4,14 @@ struct CookingModeView: View {
     let recipe: Recipe?
     var onExit: () -> Void
 
-    @StateObject private var progress = CookingProgress(steps: MockData.tomatoEgg.steps)
+    @StateObject private var progress: CookingProgress
     @State private var voiceEnabled = true
+
+    init(recipe: Recipe?, onExit: @escaping () -> Void) {
+        self.recipe = recipe
+        self.onExit = onExit
+        _progress = StateObject(wrappedValue: CookingProgress(steps: recipe?.steps ?? []))
+    }
 
     var body: some View {
         Group {
@@ -18,6 +24,7 @@ struct CookingModeView: View {
                 cookingEmptyState
             }
         }
+        .id(recipe?.id)
         .fullScreenCover(isPresented: $progress.showCompletion) {
             CompletionCelebrationView(
                 recipeName: recipe?.name ?? "番茄炒蛋",
@@ -39,12 +46,12 @@ struct CookingModeView: View {
                 Spacer()
                     .frame(height: 100)
                 
-                VStack(spacing: 24) {
+                VStack(spacing: UIStyle.Cooking.contentSpacing) {
                     Image(systemName: "chef.hat.fill")
-                        .font(.system(size: 80))
+                        .font(.system(size: UIStyle.Image.emptyStateIcon))
                         .foregroundStyle(Color.orange500)
                     
-                    VStack(spacing: 12) {
+                    VStack(spacing: UIStyle.Spacing.md) {
                         Text("选择菜谱开始烹饪")
                             .font(.title2.bold())
                             .foregroundStyle(Color.gray800)
@@ -52,16 +59,16 @@ struct CookingModeView: View {
                             .font(.subheadline)
                             .foregroundStyle(Color.gray600)
                             .multilineTextAlignment(.center)
-                            .lineSpacing(4)
+                            .lineSpacing(UIStyle.Line.spacingSmall)
                     }
                 }
-                .padding(40)
+                .padding(UIStyle.Padding.xxxl)
                 .frame(maxWidth: .infinity)
                 .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.gray300, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                        .stroke(Color.gray300, lineWidth: UIStyle.Border.width)
                 )
                 
                 Button {
@@ -73,220 +80,176 @@ struct CookingModeView: View {
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, UIStyle.Padding.lg)
                     .foregroundStyle(Color.white)
                     .background(Color.orange500)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, UIStyle.Padding.xl)
                 
                 Spacer()
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 32)
-            .padding(.bottom, 48)
+            .padding(.horizontal, UIStyle.Padding.xl)
+            .padding(.top, UIStyle.Padding.xxxl)
+            .padding(.bottom, UIStyle.Padding.bottomForNavigation)
         }
         .background(Color.gray200.opacity(0.2).ignoresSafeArea())
     }
 
     private func cookingContent(recipe: Recipe) -> some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 24) {
-                header
-                progressBar
-                timerCard
-                stepPager(recipe: recipe)
-                navigationButtons
-                indicatorDots
-                encouragement
+            VStack(spacing: UIStyle.Cooking.contentSpacing) {
+                header(recipe: recipe)
+                stepContent(recipe: recipe)
+                timerSection
+                controlButtons
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 32)
-            .padding(.bottom, 48)
+            .padding(.horizontal, UIStyle.Padding.xl)
+            .padding(.top, UIStyle.Padding.lg)
+            .padding(.bottom, UIStyle.Padding.bottomForNavigation)
         }
-        .background(Color.gray200.opacity(0.2).ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
     }
 
-    private var header: some View {
+    private func header(recipe: Recipe) -> some View {
+        VStack(spacing: UIStyle.Cooking.headerSpacing) {
         HStack {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("烹饪中")
+                Text(recipe.name)
                     .font(.title2.bold())
                     .foregroundStyle(Color.gray800)
-                Text("第 \(progress.currentIndex + 1) / \(progress.steps.count) 步")
-                    .foregroundStyle(Color.gray600)
-            }
             Spacer()
             Button {
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                    withAnimation(.spring(response: UIStyle.Animation.springResponse, dampingFraction: UIStyle.Animation.springDamping)) {
                     voiceEnabled.toggle()
                 }
             } label: {
                 Image(systemName: voiceEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                    .font(.title3)
-                    .foregroundStyle(voiceEnabled ? Color.white : Color.gray400)
-                    .frame(width: 52, height: 52)
-                    .background(voiceEnabled ? Color.orange500 : Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(voiceEnabled ? Color.clear : Color.gray300, lineWidth: 1)
-                    )
+                        .font(.system(size: UIStyle.Button.iconSizeSmall, weight: .medium))
+                        .foregroundStyle(Color.white)
+                        .frame(width: UIStyle.Cooking.voiceButtonSize, height: UIStyle.Cooking.voiceButtonSize)
+                        .background(Color.darkRed)
+                        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.small, style: .continuous))
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
+            .padding(.horizontal, UIStyle.Spacing.xs)
+            
+            // 进度条
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color.gray300.opacity(0.3))
+                        .frame(height: UIStyle.Cooking.progressBarHeight)
+                    Capsule()
+                        .fill(Color.darkRed)
+                        .frame(width: proxy.size.width * progress.progress, height: UIStyle.Cooking.progressBarHeight)
+                }
+            }
+            .frame(height: UIStyle.Cooking.progressBarHeight)
         }
     }
 
-    private var progressBar: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(Color.gray300)
-                Capsule()
-                    .fill(Color.orange500)
-                    .frame(width: proxy.size.width * progress.progress)
+    private func stepContent(recipe: Recipe) -> some View {
+        let currentStep = recipe.steps[progress.currentIndex]
+        
+        return VStack(spacing: UIStyle.Cooking.contentSpacing) {
+            // 步骤图片
+            AsyncImage(url: recipe.imageURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .failure(_), .empty:
+                    RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                        .fill(Color.gray200)
+                        .overlay(
+                            Image(systemName: "photo")
+                                .font(.system(size: UIStyle.Button.iconSizeLarge))
+                                .foregroundStyle(Color.gray400)
+                        )
+                @unknown default:
+                    RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                        .fill(Color.gray200)
+                }
             }
+            .frame(height: UIStyle.Cooking.recipeImageHeight)
+            .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                    .stroke(Color.gray300, lineWidth: UIStyle.Border.width)
+            )
+            
+            // 步骤说明
+            Text(currentStep.description)
+                .font(.system(size: UIStyle.Cooking.stepTextSize, weight: UIStyle.Cooking.stepTextWeight))
+                .foregroundStyle(Color.gray800)
+                .multilineTextAlignment(.center)
+                .lineSpacing(UIStyle.Line.spacing)
+                .padding(.horizontal, UIStyle.Padding.lg)
         }
-        .frame(height: 8)
-        .clipShape(Capsule())
     }
 
-    private var timerCard: some View {
-        VStack(spacing: 20) {
+    private var timerSection: some View {
+        VStack(spacing: 0) {
             Text(progress.timeLeft.formattedClock)
-                .font(.system(size: 56, weight: .heavy, design: .rounded))
-                .foregroundStyle(Color.orange600)
+                .font(.system(size: UIStyle.Cooking.timerSize, weight: .heavy, design: .rounded))
+                .foregroundStyle(Color.darkRed)
                 .scaleEffect(progress.isRunning ? 1.05 : 1.0)
                 .animation(
                     progress.isRunning ?
-                        .easeInOut(duration: 0.9).repeatForever(autoreverses: true) :
+                        .easeInOut(duration: UIStyle.Animation.timerPulseDuration).repeatForever(autoreverses: true) :
                         .default,
                     value: progress.isRunning
                 )
-
-            HStack(spacing: 16) {
-                Button(progress.isRunning ? "暂停" : "开始计时") {
-                    progress.toggleRunning()
-                }
-                .buttonStyle(PrimaryGradientButtonStyle())
-
-                Button("重置") {
-                    progress.restartTimerForCurrentStep()
-                    progress.isRunning = false
-                }
-                .buttonStyle(LightButtonStyle())
-            }
         }
-        .padding(28)
-        .frame(maxWidth: .infinity)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.gray300, lineWidth: 1)
-        )
-    }
-
-    private func stepPager(recipe: Recipe) -> some View {
-        TabView(selection: $progress.currentIndex) {
-            ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { index, step in
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack(spacing: 16) {
-                        Circle()
-                            .fill(Color.orange500)
-                            .frame(width: 56, height: 56)
-                            .overlay(
-                                Text("\(step.id)")
-                                    .font(.title2.bold())
-                                    .foregroundStyle(Color.white)
-                            )
-
-                        Text(step.description)
-                            .font(.headline)
-                            .foregroundStyle(Color.gray800)
-                    }
-
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.amber50)
-                        .overlay(
-                            Text("💡 小贴士：\(step.tip)")
-                                .font(.subheadline)
-                                .foregroundStyle(Color.amber700)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        )
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.gray300, lineWidth: 1)
-                )
-                .padding(.horizontal, 4)
-                .tag(index)
-                .animation(.easeInOut, value: progress.currentIndex)
+        .frame(height: UIStyle.Cooking.timerHeight)
             }
-        }
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .frame(height: 260)
-    }
 
-    private var navigationButtons: some View {
-        HStack(spacing: 16) {
+    private var controlButtons: some View {
+        HStack(spacing: UIStyle.Cooking.controlButtonSpacing) {
+            // 播放/暂停按钮 - 深红色方形，带圆角
             Button {
-                progress.previous()
+                    progress.toggleRunning()
             } label: {
-                Label("上一步", systemImage: "chevron.left")
+                Image(systemName: progress.isRunning ? "pause.fill" : "play.fill")
+                    .font(.title2)
+                                    .foregroundStyle(Color.white)
+                    .frame(width: UIStyle.Cooking.controlButtonSize, height: UIStyle.Cooking.controlButtonSize)
+                    .background(Color.darkRed)
+                    .clipShape(RoundedRectangle(cornerRadius: UIStyle.Cooking.controlButtonCornerRadius, style: .continuous))
             }
-            .buttonStyle(OutlinedButtonStyle(enabled: progress.currentIndex > 0))
-            .disabled(progress.currentIndex == 0)
+            .buttonStyle(.plain)
+            
+            // 重置按钮 - 灰色圆形
+            Button {
+                progress.restartTimerForCurrentStep()
+                progress.isRunning = false
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.title2)
+                    .foregroundStyle(Color.white)
+                    .frame(width: UIStyle.Cooking.controlButtonSize, height: UIStyle.Cooking.controlButtonSize)
+                    .background(Color.gray200)
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
 
-            if progress.isLastStep {
+            // 下一步按钮 - 灰色圆形，使用快进图标
                 Button {
                     progress.next()
                 } label: {
-                    Label("完成烹饪", systemImage: "checkmark")
-                }
-                .buttonStyle(GreenGradientButtonStyle())
-            } else {
-                Button {
-                    progress.next()
-                } label: {
-                    Label("完成这步", systemImage: "chevron.right")
-                }
-                .buttonStyle(PrimaryGradientButtonStyle())
+                Image(systemName: "forward.fill")
+                    .font(.title2)
+                    .foregroundStyle(Color.white)
+                    .frame(width: UIStyle.Cooking.controlButtonSize, height: UIStyle.Cooking.controlButtonSize)
+                    .background(Color.gray200)
+                    .clipShape(Circle())
             }
+            .buttonStyle(.plain)
         }
-    }
-
-    private var indicatorDots: some View {
-        HStack(spacing: 8) {
-            ForEach(progress.steps.indices, id: \.self) { index in
-                Capsule()
-                    .fill(progress.capsuleColor(for: index))
-                    .frame(width: progress.capsuleWidth(for: index), height: 8)
-                    .animation(.easeInOut(duration: 0.25), value: progress.currentIndex)
-            }
-        }
-    }
-
-    private var encouragement: some View {
-        RoundedRectangle(cornerRadius: 16, style: .continuous)
-            .fill(Color.orange100)
-            .overlay(
-                Text(progress.encouragementText)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(Color.orange700)
-                    .padding()
-            )
-            .frame(height: 84)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.orange300, lineWidth: 1)
-            )
+        .padding(.top, UIStyle.Spacing.sm)
     }
 }
 

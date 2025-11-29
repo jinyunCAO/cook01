@@ -1,25 +1,25 @@
 import SwiftUI
 
 extension Color {
-    // 绿色主题色系（替代橙色）
-    static let orange50   = Color(hex: 0xF0FDF4)  // 浅绿背景
-    static let orange100  = Color(hex: 0xDCFCE7)  // 浅绿
-    static let orange200  = Color(hex: 0xBBF7D0)  // 浅绿边框
-    static let orange300  = Color(hex: 0x86EFAC)  // 浅绿强调
-    static let orange400  = Color(hex: 0x4ADE80)  // 中等绿
-    static let orange500  = Color(hex: 0x22C55E)  // 主绿色
-    static let orange600  = Color(hex: 0x16A34A)  // 深绿
-    static let orange700  = Color(hex: 0x15803D)  // 更深绿
-    static let orange800  = Color(hex: 0x166534)  // 深绿
-    static let orange900  = Color(hex: 0x14532D)  // 最深绿
+    // 红色主题色系（替代绿色）
+    static let orange50   = Color(hex: 0xFEF2F2)  // 浅红背景
+    static let orange100  = Color(hex: 0xFEE2E2)  // 浅红
+    static let orange200  = Color(hex: 0xFECACA)  // 浅红边框
+    static let orange300  = Color(hex: 0xFCA5A5)  // 浅红强调
+    static let orange400  = Color(hex: 0xF87171)  // 中等红
+    static let orange500  = Color(hex: 0x7C0013)  // 主红色（与darkRed一致）
+    static let orange600  = Color(hex: 0xDC2626)  // 深红
+    static let orange700  = Color(hex: 0xB91C1C)  // 更深红
+    static let orange800  = Color(hex: 0x991B1B)  // 深红
+    static let orange900  = Color(hex: 0x7F1D1D)  // 最深红
 
-    // 琥珀色系改为浅绿色系
-    static let amber50    = Color(hex: 0xF0FDF4)  // 浅绿背景
-    static let amber100   = Color(hex: 0xDCFCE7)  // 浅绿
-    static let amber200   = Color(hex: 0xBBF7D0)  // 浅绿边框
-    static let amber400   = Color(hex: 0x4ADE80)  // 中等绿
-    static let amber500   = Color(hex: 0x22C55E)  // 主绿色
-    static let amber700   = Color(hex: 0x16A34A)  // 深绿
+    // 琥珀色系改为浅红色系
+    static let amber50    = Color(hex: 0xFEF2F2)  // 浅红背景
+    static let amber100   = Color(hex: 0xFEE2E2)  // 浅红
+    static let amber200   = Color(hex: 0xFECACA)  // 浅红边框
+    static let amber400   = Color(hex: 0xF87171)  // 中等红
+    static let amber500   = Color(hex: 0x7C0013)  // 主红色（与darkRed一致）
+    static let amber700   = Color(hex: 0xDC2626)  // 深红
 
     static let yellow50   = Color(hex: 0xFEFCE8)
 
@@ -35,8 +35,15 @@ extension Color {
     static let gray700    = Color(hex: 0x374151)
     static let gray800    = Color(hex: 0x1F2937)
 
-    static let green400   = Color(hex: 0x34D399)
-    static let emerald500 = Color(hex: 0x10B981)
+    static let green400   = Color(hex: 0x7C0013)  // 改为红色主题色
+    static let emerald500 = Color(hex: 0x7C0013)  // 改为红色主题色
+    
+    // 设计稿专用颜色
+    static let darkRed    = Color(hex: 0x7C0013)  // 高亮红色，用于主按钮、进度条、选中状态
+    static let darkGreen  = Color(hex: 0x7C0013)  // 改为红色主题色（用于计时器）
+    
+    // UI背景色
+    static let searchBackground = Color(hex: 0xF8F8F8)  // 搜索框背景色
 }
 
 extension Color {

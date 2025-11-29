@@ -7,7 +7,7 @@ struct ProfileView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 24) {
+            VStack(spacing: UIStyle.Profile.sectionSpacing) {
                 avatarSection
                 statsGrid
                 frequentRecipes
@@ -15,26 +15,26 @@ struct ProfileView: View {
                 achievements
                 versionInfo
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 24)
-            .padding(.bottom, 40)
+            .padding(.horizontal, UIStyle.Padding.lg)
+            .padding(.top, UIStyle.Padding.xxl)
+            .padding(.bottom, UIStyle.Padding.bottomForNavigation)
         }
     }
 
     private var avatarSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: UIStyle.Profile.avatarSpacing) {
             ZStack(alignment: .bottomTrailing) {
                 Circle()
                     .fill(Color.orange500)
-                    .frame(width: 120, height: 120)
+                    .frame(width: UIStyle.Profile.avatarSize, height: UIStyle.Profile.avatarSize)
                     .overlay(
                         Text("🧑‍🍳")
-                            .font(.system(size: 48))
+                            .font(.system(size: UIStyle.Button.iconSizeLarge))
                     )
 
                 Circle()
-                    .fill(Color.green400)
-                    .frame(width: 38, height: 38)
+                    .fill(Color.darkRed)
+                    .frame(width: UIStyle.Profile.avatarBadgeSize, height: UIStyle.Profile.avatarBadgeSize)
                     .overlay(
                         Image(systemName: "rosette")
                             .font(.caption.bold())
@@ -42,9 +42,9 @@ struct ProfileView: View {
                     )
                     .overlay(
                         Circle()
-                            .stroke(Color.white, lineWidth: 3)
+                            .stroke(Color.white, lineWidth: UIStyle.Profile.avatarBadgeBorderWidth)
                     )
-                    .offset(x: 6, y: 6)
+                    .offset(x: UIStyle.Spacing.xs + 2, y: UIStyle.Spacing.xs + 2)
             }
 
             Text("美食探索者")
@@ -57,15 +57,15 @@ struct ProfileView: View {
     }
 
     private var statsGrid: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 12) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: UIStyle.Profile.statsGridSpacing), count: UIStyle.Profile.statsGridColumns), spacing: UIStyle.Profile.statsGridSpacing) {
             ForEach(stats) { stat in
-                VStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                VStack(spacing: UIStyle.Spacing.sm + 2) {
+                    RoundedRectangle(cornerRadius: UIStyle.CornerRadius.medium, style: .continuous)
                         .fill(stat.colors.first ?? Color.orange500)
-                        .frame(width: 44, height: 44)
+                        .frame(width: UIStyle.Profile.statsIconContainerSize, height: UIStyle.Profile.statsIconContainerSize)
                         .overlay(
                             Image(systemName: stat.iconName)
-                                .font(.system(size: 18, weight: .semibold))
+                                .font(.system(size: UIStyle.Profile.statsIconSize, weight: .semibold))
                                 .foregroundStyle(Color.white)
                         )
 
@@ -76,19 +76,19 @@ struct ProfileView: View {
                         .font(.caption)
                         .foregroundStyle(Color.gray500)
                 }
-                .padding(14)
+                .padding(UIStyle.Profile.statsPadding)
                 .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.gray300, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                        .stroke(Color.gray300, lineWidth: UIStyle.Border.width)
                 )
             }
         }
     }
 
     private var frequentRecipes: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: UIStyle.Spacing.lg) {
             HStack {
                 Text("常做菜谱")
                     .font(.title3.bold())
@@ -97,10 +97,10 @@ struct ProfileView: View {
                 Text("⭐️")
             }
 
-            VStack(spacing: 12) {
+            VStack(spacing: UIStyle.Spacing.md) {
                 ForEach(recent) { recipe in
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: UIStyle.Spacing.xs) {
                             Text(recipe.name)
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(Color.gray800)
@@ -113,19 +113,19 @@ struct ProfileView: View {
                             .font(.caption)
                             .foregroundStyle(Color.gray400)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, UIStyle.Padding.lg)
+                    .padding(.vertical, UIStyle.Spacing.md)
                     .background(Color.orange50)
-                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous))
                 }
             }
         }
-        .padding(20)
+        .padding(UIStyle.Padding.xl)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.orange100, lineWidth: 2)
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous)
+                .stroke(Color.orange100, lineWidth: UIStyle.Border.widthThick)
         )
     }
 
@@ -135,13 +135,13 @@ struct ProfileView: View {
                 Button {
                 } label: {
                     HStack {
-                        HStack(spacing: 14) {
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        HStack(spacing: UIStyle.Padding.md + 2) {
+                            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.medium + 2, style: .continuous)
                                 .fill(Color.orange50)
-                                .frame(width: 44, height: 44)
+                                .frame(width: UIStyle.Profile.statsIconContainerSize, height: UIStyle.Profile.statsIconContainerSize)
                                 .overlay(
                                     Image(systemName: item.iconName)
-                                        .font(.system(size: 18, weight: .medium))
+                                        .font(.system(size: UIStyle.Profile.statsIconSize, weight: .medium))
                                         .foregroundStyle(item.tint)
                                 )
                             Text(item.label)
@@ -154,8 +154,8 @@ struct ProfileView: View {
                         if let badge = item.badge {
                             Text(badge)
                                 .font(.caption)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
+                                .padding(.horizontal, UIStyle.Spacing.sm + 2)
+                                .padding(.vertical, UIStyle.Spacing.xs + 2)
                                 .background(Color.orange100)
                                 .foregroundStyle(Color.orange600)
                                 .clipShape(Capsule())
@@ -165,8 +165,8 @@ struct ProfileView: View {
                             .font(.caption)
                             .foregroundStyle(Color.gray400)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 18)
+                    .padding(.horizontal, UIStyle.Padding.xl)
+                    .padding(.vertical, UIStyle.Padding.lg + 2)
                 }
                 .buttonStyle(.plain)
 
@@ -178,17 +178,17 @@ struct ProfileView: View {
             }
         }
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.orange100, lineWidth: 2)
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous)
+                .stroke(Color.orange100, lineWidth: UIStyle.Border.widthThick)
         )
-        .shadow(color: .orange.opacity(0.1), radius: 10, y: 6)
+        .shadow(color: .orange.opacity(0.1), radius: UIStyle.Spacing.sm + 2, y: UIStyle.Spacing.xs + 2)
     }
 
     private var achievements: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: UIStyle.Spacing.lg) {
+            HStack(spacing: UIStyle.Spacing.md) {
                 Text("本周成就")
                     .font(.title3.bold())
                     .foregroundStyle(Color.orange700)
@@ -197,12 +197,12 @@ struct ProfileView: View {
                     .foregroundStyle(Color.orange600)
             }
 
-            HStack(spacing: 12) {
+            HStack(spacing: UIStyle.Spacing.md) {
                 ForEach(["🥇", "🥈", "🥉", "⭐️", "🎯"], id: \.self) { item in
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
                         .fill(Color.white)
-                        .frame(width: 48, height: 48)
-                        .shadow(color: .orange.opacity(0.08), radius: 8, y: 4)
+                        .frame(width: UIStyle.Button.iconSizeLarge, height: UIStyle.Button.iconSizeLarge)
+                        .shadow(color: .orange.opacity(0.08), radius: UIStyle.Spacing.sm, y: UIStyle.Spacing.xs)
                         .overlay(
                             Text(item)
                                 .font(.title2)
@@ -210,19 +210,19 @@ struct ProfileView: View {
                 }
             }
         }
-        .padding(24)
+        .padding(UIStyle.Padding.xxl)
         .background(
             LinearGradient(colors: [.orange100, .amber100, .yellow50], startPoint: .topLeading, endPoint: .bottomTrailing)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.orange200, lineWidth: 2)
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.extraLarge, style: .continuous)
+                .stroke(Color.orange200, lineWidth: UIStyle.Border.widthThick)
         )
     }
 
     private var versionInfo: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: UIStyle.Spacing.xs) {
             Text("煮趣 v1.0.0")
                 .font(.caption)
                 .foregroundStyle(Color.gray400)
@@ -231,7 +231,7 @@ struct ProfileView: View {
                 .foregroundStyle(Color.gray400)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+        .padding(.vertical, UIStyle.Spacing.md)
     }
 }
 

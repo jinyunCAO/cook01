@@ -9,25 +9,25 @@ struct CompletionCelebrationView: View {
     var body: some View {
         ZStack {
             Color.gray200.opacity(0.2)
-                .ignoresSafeArea()
+            .ignoresSafeArea()
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 28) {
+                VStack(spacing: UIStyle.Padding.xxxl) {
                     celebrationHeader
                     statsCard
                     achievementCard
                     actions
                     footer
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, UIStyle.Padding.xxl)
                 .padding(.top, 80)
-                .padding(.bottom, 40)
+                .padding(.bottom, UIStyle.Padding.xxxl)
             }
         }
     }
 
     private var celebrationHeader: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: UIStyle.Spacing.md) {
             Text("🎉")
                 .font(.system(size: 96))
                 .rotationEffect(.degrees(emojiRotate ? 10 : -10))
@@ -48,11 +48,11 @@ struct CompletionCelebrationView: View {
     }
 
     private var statsCard: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 8) {
+        VStack(spacing: UIStyle.Padding.xl) {
+            VStack(spacing: UIStyle.Spacing.sm) {
                 Circle()
                     .fill(Color.orange500)
-                    .frame(width: 80, height: 80)
+                    .frame(width: UIStyle.Image.emptyStateIcon, height: UIStyle.Image.emptyStateIcon)
                     .overlay(
                         Image(systemName: "checkmark")
                             .font(.system(size: 34, weight: .bold))
@@ -71,25 +71,25 @@ struct CompletionCelebrationView: View {
                     .foregroundStyle(Color.gray600)
             }
 
-            HStack(spacing: 14) {
+            HStack(spacing: UIStyle.Padding.md + 2) {
                 statBubble(value: "+1", label: "完成次数", color: .orange600)
                 statBubble(value: "+10", label: "经验值", color: .amber500)
                 statBubble(value: "⭐️", label: "新成就", color: .yellow50)
             }
         }
-        .padding(28)
+        .padding(UIStyle.Padding.xxxl)
         .frame(maxWidth: .infinity)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.gray300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                .stroke(Color.gray300, lineWidth: UIStyle.Border.width)
         )
     }
 
     private var achievementCard: some View {
-        HStack(spacing: 16) {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+        HStack(spacing: UIStyle.Spacing.lg) {
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
                 .fill(Color.orange500)
                 .frame(width: 64, height: 64)
                 .overlay(
@@ -108,18 +108,18 @@ struct CompletionCelebrationView: View {
             }
             Spacer()
         }
-        .padding(24)
+        .padding(UIStyle.Padding.xxl)
         .frame(maxWidth: .infinity)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.gray300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                .stroke(Color.gray300, lineWidth: UIStyle.Border.width)
         )
     }
 
     private var actions: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: UIStyle.Spacing.lg) {
             Button {
                 // 分享逻辑占位
             } label: {
@@ -127,9 +127,9 @@ struct CompletionCelebrationView: View {
                     .font(.headline)
                     .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, UIStyle.Padding.lg)
                     .background(Color.orange500)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
             }
             .buttonStyle(.plain)
 
@@ -140,12 +140,12 @@ struct CompletionCelebrationView: View {
                     .font(.headline)
                     .foregroundStyle(Color.orange700)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, UIStyle.Padding.lg)
                     .background(Color.orange100)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(Color.orange300, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                            .stroke(Color.orange300, lineWidth: UIStyle.Border.width)
                     )
             }
             .buttonStyle(.plain)

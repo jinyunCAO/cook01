@@ -24,7 +24,7 @@ struct GreenGradientButtonStyle: ButtonStyle {
             .padding(.horizontal, 18)
             .foregroundStyle(Color.white)
             .frame(maxWidth: .infinity)
-            .background(Color.green400)
+            .background(Color.darkRed)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .opacity(configuration.isPressed ? 0.8 : 1.0)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)

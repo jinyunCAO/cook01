@@ -8,7 +8,7 @@ struct ModeButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: UIStyle.Spacing.sm) {
                 Image(systemName: systemImage)
                 Text(title)
                     .font(.subheadline)
@@ -16,12 +16,12 @@ struct ModeButton: View {
             }
             .foregroundStyle(selected ? Color.white : Color.gray600)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, UIStyle.Spacing.md)
             .background(selected ? Color.orange500 : Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(selected ? Color.clear : Color.gray300, lineWidth: 1)
+                RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                    .stroke(selected ? Color.clear : Color.gray300, lineWidth: UIStyle.Border.width)
             )
         }
         .buttonStyle(.plain)

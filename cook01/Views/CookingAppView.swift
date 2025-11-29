@@ -8,14 +8,17 @@ struct CookingAppView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            GradientBackground()
+            Color.white.ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            // 内容区域，不添加固定 padding，让各个视图自己处理滚动
                 content
-                    .padding(.bottom, 76)
-            }
 
+            // 悬浮的导航栏，使用 ignoresSafeArea 确保它真正悬浮
+            // 在详情页不显示导航栏
+            if currentPage != .recipes {
             BottomBar(current: $currentPage)
+                    .ignoresSafeArea(edges: .bottom)
+            }
         }
     }
 

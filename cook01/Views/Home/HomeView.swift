@@ -84,8 +84,6 @@ struct HomeView: View {
     @State private var isImporting: Bool = false
     @State private var importStatus: ImportStatus?
     @State private var importResult: LinkImportResult?
-    @State private var selectedRecipeIDs: Set<UUID> = []
-    @State private var isMultiSelectMode: Bool = false
     @State private var lastImportedURL: String = ""
 
     let onRecipeTap: (Recipe) -> Void
@@ -95,17 +93,18 @@ struct HomeView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    header
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: UIStyle.Cooking.contentSpacing) {
                     importCard
+                header
                     recipesSection
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 40)
+            }
+                .padding(.horizontal, UIStyle.Padding.xl)
+                .padding(.top, UIStyle.Padding.xl)
+                .padding(.bottom, UIStyle.Padding.bottomForNavigation)
                 .frame(width: geometry.size.width)
             }
+            .background(Color.white)
             .safeAreaInset(edge: .top) {
                 Color.clear.frame(height: 0)
             }
@@ -136,7 +135,7 @@ struct HomeView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .center, spacing: 16) {
+        HStack(alignment: .center, spacing: UIStyle.Spacing.lg) {
             // 左侧头像
             Group {
                 if let onProfileTap = onProfileTap {
@@ -152,22 +151,22 @@ struct HomeView: View {
             }
             
             // 右侧问候文本
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: UIStyle.Home.greetingSpacing) {
                 Text("Hello, 晋云")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(Color.gray800)
+                    .font(.system(size: UIStyle.Home.greetingTitleSize, weight: .regular))
+                    .foregroundStyle(Color.gray600)
                 
                 Text("今天想做什么好吃的?")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundStyle(Color.gray600)
+                    .font(.system(size: UIStyle.Home.greetingSubtitleSize, weight: .semibold))
+                .foregroundStyle(Color.gray800)
             }
-            .frame(height: 56, alignment: .leading)
+            .frame(height: UIStyle.Home.greetingHeight, alignment: .leading)
             
             Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     private var avatarView: some View {
         AsyncImage(url: URL(string: "https://sns-avatar-qc.xhscdn.com/avatar/6445e687a870649a5851e88c.jpg?imageView2/2/w/540/format/webp%7CimageMogr2/strip2")) { phase in
             switch phase {
@@ -179,228 +178,105 @@ struct HomeView: View {
                 ZStack {
                     Circle()
                         .fill(Color.gray300)
-                        .frame(width: 56, height: 56)
+                        .frame(width: UIStyle.Home.avatarSize, height: UIStyle.Home.avatarSize)
                     
                     Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 32))
+                        .font(.system(size: UIStyle.Home.avatarIconSize))
                         .foregroundStyle(Color.gray500)
                 }
             @unknown default:
                 ZStack {
                     Circle()
                         .fill(Color.gray300)
-                        .frame(width: 56, height: 56)
+                        .frame(width: UIStyle.Home.avatarSize, height: UIStyle.Home.avatarSize)
                     
                     Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 32))
+                        .font(.system(size: UIStyle.Home.avatarIconSize))
                         .foregroundStyle(Color.gray500)
                 }
             }
         }
-        .frame(width: 56, height: 56)
+        .frame(width: UIStyle.Home.avatarSize, height: UIStyle.Home.avatarSize)
         .clipShape(Circle())
         .overlay(
             Circle()
-                .stroke(Color.white, lineWidth: 2)
+                .stroke(Color.white, lineWidth: UIStyle.Home.avatarBorderWidth)
         )
-        .shadow(color: Color.black.opacity(0.1), radius: 4, y: 2)
+        .shadow(color: UIStyle.Shadow.color.opacity(0.1), radius: UIStyle.Home.avatarShadowRadius, y: UIStyle.Home.avatarShadowY)
     }
 
     private var importCard: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: UIStyle.Home.importCardSpacing) {
             // 左侧链接图标
             Image(systemName: "link")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(Color.gray500)
+                .font(.system(size: UIStyle.Home.importCardIconSize, weight: .medium))
+                            .foregroundStyle(Color.gray500)
             
             // 输入框
-            TextField("粘贴一下,马上开饭!", text: $url)
+            TextField("粘贴链接,一键导入", text: $url)
                 .textInputAutocapitalization(.none)
                 .disableAutocorrection(true)
-                .font(.body)
+                .font(.system(size: UIStyle.Home.importCardFontSize))
                 .foregroundStyle(Color.gray800)
                 .submitLabel(.go)
                 .onSubmit {
                     if !url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         importAction()
-                    }
                 }
+            }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 18)
-        .background(Color.gray200.opacity(0.2))
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .padding(.horizontal, UIStyle.Home.importCardPaddingH)
+        .frame(height: UIStyle.Home.importCardHeight)  // 使用明确的高度
+        .background(Color.searchBackground)
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.Home.importCardCornerRadius, style: .continuous))
     }
 
     @ViewBuilder
     private var recipesSection: some View {
         let allRecipes = appState.linkHistory.flatMap { $0.result.recipes }
         
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("识别到的菜谱")
-                    .font(.title3.bold())
+        VStack(alignment: .leading, spacing: UIStyle.Home.sectionSpacing) {
+            VStack(alignment: .leading, spacing: UIStyle.Home.sectionTitleSpacing) {
+                Text("食谱历史")
+                    .font(.system(size: UIStyle.Home.sectionTitleSize, weight: .bold))
                     .foregroundStyle(Color.gray800)
-                
-                Spacer()
-                
-                if !allRecipes.isEmpty {
-                    if isMultiSelectMode {
-                        if !selectedRecipeIDs.isEmpty {
-                            HStack(spacing: 12) {
-                                Button {
-                                    addSelectedToShoppingList()
-                                } label: {
-                                    Label("添加到清单(\(selectedRecipeIDs.count))", systemImage: "cart.badge.plus")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(Color.white)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(Color.orange500)
-                                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                                }
-                                .buttonStyle(.plain)
-                                
-                                Button {
-                                    withAnimation {
-                                        isMultiSelectMode = false
-                                        selectedRecipeIDs.removeAll()
-                                    }
-                                } label: {
-                                    Text("取消")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(Color.gray600)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        } else {
-                            HStack(spacing: 12) {
-                                Button {
-                                    withAnimation {
-                                        selectedRecipeIDs = Set(allRecipes.map(\.id))
-                                    }
-                                } label: {
-                                    Text("全选")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(Color.orange600)
-                                }
-                                .buttonStyle(.plain)
-                                
-                                Button {
-                                    withAnimation {
-                                        isMultiSelectMode = false
-                                    }
-                                } label: {
-                                    Text("取消")
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(Color.gray600)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    } else {
-                        Button {
-                            withAnimation {
-                                isMultiSelectMode = true
-                            }
-                        } label: {
-                            Text("多选")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(Color.orange600)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
+                Text("那些惊喜大餐都在这里")
+                    .font(.system(size: UIStyle.Home.sectionSubtitleSize, weight: .regular))
+                    .foregroundStyle(Color.gray600)
             }
             
             if allRecipes.isEmpty {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(
-                        style: StrokeStyle(lineWidth: 1, dash: [8, 6])
-                    )
+                RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+            .strokeBorder(
+                        style: StrokeStyle(lineWidth: UIStyle.Border.width, dash: UIStyle.Home.emptyStateDashPattern)
+            )
                     .foregroundStyle(Color.gray300)
-                    .overlay(
-                        Text("🎨 试试从小红书导入你喜欢的菜谱吧！")
-                            .font(.body)
-                            .foregroundStyle(Color.gray700)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    )
-                    .frame(height: 120)
+            .overlay(
+                Text("🎨 试试从小红书导入你喜欢的菜谱吧！")
+                    .font(.body)
+                    .foregroundStyle(Color.gray700)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            )
+            .frame(height: UIStyle.Home.emptyStateHeight)
             } else {
-                VStack(spacing: 14) {
+                // 网格布局：2列
+                let columns = [
+                    GridItem(.flexible(), spacing: UIStyle.Home.gridSpacing),
+                    GridItem(.flexible(), spacing: UIStyle.Home.gridSpacing)
+                ]
+                
+                LazyVGrid(columns: columns, spacing: UIStyle.Home.gridSpacing) {
                     ForEach(allRecipes) { recipe in
-                        SwipeableRecipeCard(
-                            recipe: recipe,
-                            isSelected: selectedRecipeIDs.contains(recipe.id),
-                            showCheckbox: isMultiSelectMode,
-                            onTap: {
-                                if isMultiSelectMode {
-                                    if selectedRecipeIDs.contains(recipe.id) {
-                                        selectedRecipeIDs.remove(recipe.id)
-                                    } else {
-                                        selectedRecipeIDs.insert(recipe.id)
-                                    }
-                                }
-                            },
-                            onDetailTap: {
-                                if !isMultiSelectMode {
-                                    onRecipeTap(recipe)
-                                }
-                            },
-                            onDelete: {
-                                deleteRecipe(recipe)
-                            }
-                        )
+                        RecipeGridCard(recipe: recipe) {
+                            onRecipeTap(recipe)
+                        }
                     }
                 }
             }
         }
     }
     
-    private func addSelectedToShoppingList() {
-        guard let shoppingViewModel = shoppingViewModel else { return }
-        let allRecipes = appState.linkHistory.flatMap { $0.result.recipes }
-        let selectedRecipes = allRecipes.filter { selectedRecipeIDs.contains($0.id) }
-        shoppingViewModel.addRecipesToShoppingList(selectedRecipes)
-        withAnimation {
-            selectedRecipeIDs.removeAll()
-            isMultiSelectMode = false
-        }
-        // 跳转到购物清单页
-        onNavigateToShopping?()
-    }
-    
-    private func deleteRecipe(_ recipe: Recipe) {
-        withAnimation {
-            // 找到包含该菜谱的 entry
-            if let index = appState.linkHistory.firstIndex(where: { entry in
-                entry.result.recipes.contains { $0.id == recipe.id }
-            }) {
-                let entry = appState.linkHistory[index]
-                let remainingRecipes = entry.result.recipes.filter { $0.id != recipe.id }
-                
-                if remainingRecipes.isEmpty {
-                    // 如果没有剩余菜谱，删除整个 entry
-                    appState.linkHistory.remove(at: index)
-                } else {
-                    // 如果有剩余菜谱，创建新的 entry
-                    let newResult = LinkImportResult(
-                        title: entry.result.title,
-                        coverURL: entry.result.coverURL,
-                        recipes: remainingRecipes
-                    )
-                    let newEntry = LinkHistoryEntry(
-                        result: newResult,
-                        sourceURL: entry.sourceURL,
-                        timestamp: entry.timestamp
-                    )
-                    appState.linkHistory[index] = newEntry
-                }
-            }
-            selectedRecipeIDs.remove(recipe.id)
-        }
-    }
 
     private func importAction() {
         let trimmed = url.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -424,7 +300,7 @@ struct HomeView: View {
                 lastImportedURL = trimmed
                 url = ""
                 // 不立即保存，等用户点击"收进菜谱库"时再保存
-                importResult = result
+                    importResult = result
             } else {
                 withAnimation {
                     importStatus = .failure(message: "暂未收录该菜谱，可以尝试其它链接")
@@ -511,7 +387,7 @@ extension HomeView {
         var backgroundColor: Color {
             switch self {
             case .success:
-                return Color.green400.opacity(0.15)
+                return Color.darkRed.opacity(0.15)
             case .failure:
                 return Color.orange100.opacity(0.6)
             }
@@ -520,7 +396,7 @@ extension HomeView {
         var borderColor: Color {
             switch self {
             case .success:
-                return Color.green400.opacity(0.4)
+                return Color.darkRed.opacity(0.4)
             case .failure:
                 return Color.orange200
             }
@@ -529,10 +405,12 @@ extension HomeView {
         var textColor: Color {
             switch self {
             case .success:
-                return Color.green400
+                return Color.darkRed
             case .failure:
                 return Color.orange700
             }
         }
     }
 }
+
+

@@ -68,7 +68,7 @@ final class CookingProgress: ObservableObject {
 
     func capsuleColor(for index: Int) -> Color {
         if index == currentIndex { return .orange500 }
-        if completed.contains(index) { return .green400 }
+        if completed.contains(index) { return .darkRed }
         return .gray300
     }
 

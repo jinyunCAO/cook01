@@ -24,14 +24,14 @@ struct LinkImportResultView: View {
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 28) {
+                VStack(spacing: UIStyle.Padding.xxxl) {
                     header
                     selectionList
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 120)
+                .padding(.horizontal, UIStyle.Padding.xl)
+                .padding(.bottom, UIStyle.Padding.bottomForNavigation + 20)
             }
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .background(Color.white.ignoresSafeArea())
             .navigationTitle("识别结果")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -42,21 +42,23 @@ struct LinkImportResultView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 12) {
+                VStack(spacing: UIStyle.Spacing.md) {
                     Divider()
                         .overlay(Color.orange100.opacity(0.6))
                     actionButtons
                 }
-                .padding(.top, 12)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 16)
+                .padding(.top, UIStyle.Spacing.md)
+                .padding(.horizontal, UIStyle.Padding.xl)
+                .padding(.bottom, UIStyle.Padding.lg)
                 .background(.ultraThinMaterial)
             }
         }
     }
 
     private var header: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: UIStyle.LinkImport.headerSpacing) {
+            // 小红书预览样式：封面与文本在同一个大气泡中
+            HStack(spacing: 0) {
             AsyncImage(url: result.coverURL) { phase in
                 switch phase {
                 case .success(let image):
@@ -71,34 +73,57 @@ struct LinkImportResultView: View {
                     Color.orange100
                 }
             }
-            .frame(height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.gray300, lineWidth: 1)
-            )
+                .frame(width: UIStyle.LinkImport.headerImageSize, height: UIStyle.LinkImport.headerImageSize)
+                .clipShape(
+                    RoundedRectangle(
+                        cornerRadius: UIStyle.LinkImport.headerCardCornerRadius,
+                        style: .continuous
+                    )
+                )
+                .clipped()
 
-            VStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: UIStyle.Spacing.sm) {
                 Text(result.title)
-                    .font(.title2.bold())
+                        .font(.body)
                     .foregroundStyle(Color.gray800)
-                    .multilineTextAlignment(.center)
-                Text("识别到 \(result.recipes.count) 道菜谱，默认全部导入")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.gray600)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(3)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, UIStyle.LinkImport.headerCardPaddingH)
+                .padding(.vertical, UIStyle.LinkImport.headerCardPaddingV)
             }
-            .frame(maxWidth: .infinity)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: UIStyle.LinkImport.headerCardCornerRadius, style: .continuous))
+            .shadow(color: UIStyle.Shadow.color.opacity(0.06), radius: 12, y: 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // 识别到菜谱提示
+                Text("识别到 \(result.recipes.count) 道菜谱，默认全部导入")
+                .font(.system(size: UIStyle.LinkImport.summaryFontSize))
+                .foregroundStyle(Color.darkRed)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.top, 24)
+        .padding(.top, UIStyle.Padding.xxl)
     }
 
     private var selectionList: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        // 两列网格，卡片样式与设计稿一致
+        let columns = [
+            GridItem(.flexible(), spacing: UIStyle.LinkImport.gridSpacing),
+            GridItem(.flexible(), spacing: UIStyle.LinkImport.gridSpacing)
+        ]
+        
+        return LazyVGrid(columns: columns, spacing: UIStyle.LinkImport.gridSpacing) {
             ForEach(result.recipes) { recipe in
+                let isSelected = selectedRecipeIDs.contains(recipe.id)
+                
                 Button {
                     toggle(recipe)
                 } label: {
-                    HStack(spacing: 16) {
+                    ZStack(alignment: .topTrailing) {
+                        VStack(alignment: .leading, spacing: UIStyle.LinkImport.cardContentSpacing) {
+                            // 圆形菜谱图片
                         AsyncImage(url: recipe.imageURL) { phase in
                             switch phase {
                             case .success(let image):
@@ -113,39 +138,49 @@ struct LinkImportResultView: View {
                                 Color.orange100
                             }
                         }
-                        .frame(width: 72, height: 72)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .frame(width: UIStyle.LinkImport.cardImageSize, height: UIStyle.LinkImport.cardImageSize)
+                            .clipShape(Circle())
 
-                        VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: UIStyle.Spacing.sm) {
                             Text(recipe.name)
                                 .font(.headline)
                                 .foregroundStyle(Color.gray800)
-                            Text("\(recipe.time) · \(recipe.servings)")
-                                .font(.caption)
+                                
+                                HStack(spacing: UIStyle.RecipeGridCard.timeSpacing) {
+                                    Image(systemName: "clock")
+                                        .font(.system(size: UIStyle.RecipeGridCard.timeIconSize))
+                                        .foregroundStyle(Color.gray500)
+                                    Text(recipe.time)
+                                        .font(.system(size: UIStyle.RecipeGridCard.timeFontSize))
                                 .foregroundStyle(Color.gray500)
                         }
-
-                        Spacer()
-
-                        Image(systemName: selectedRecipeIDs.contains(recipe.id) ? "checkmark.circle.fill" : "circle")
-                            .font(.title3)
-                            .foregroundStyle(
-                                selectedRecipeIDs.contains(recipe.id) ? Color.orange500 : Color.gray300
-                            )
+                            }
                     }
-                    .padding(18)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        selectedRecipeIDs.contains(recipe.id) ? Color.orange50 : Color.white
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .padding(UIStyle.LinkImport.cardPadding)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: UIStyle.LinkImport.cardCornerRadius, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            RoundedRectangle(cornerRadius: UIStyle.LinkImport.cardCornerRadius, style: .continuous)
                             .stroke(
-                                selectedRecipeIDs.contains(recipe.id) ? Color.orange500 : Color.gray300,
-                                lineWidth: selectedRecipeIDs.contains(recipe.id) ? 2 : 1
+                                    isSelected ? Color.darkRed : Color.gray300,
+                                    lineWidth: isSelected ? UIStyle.LinkImport.cardBorderWidth : UIStyle.Border.width
                             )
                     )
+                        
+                        // 右上角选中勾选标记
+                        if isSelected {
+                            Circle()
+                                .fill(Color.darkRed)
+                                .frame(width: UIStyle.LinkImport.checkBadgeSize, height: UIStyle.LinkImport.checkBadgeSize)
+                                .overlay(
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: UIStyle.LinkImport.checkIconSize, weight: .bold))
+                                        .foregroundStyle(Color.white)
+                                )
+                                .offset(x: -UIStyle.Spacing.md, y: UIStyle.Spacing.md)
+                        }
+                    }
                 }
                 .buttonStyle(.plain)
             }
@@ -154,18 +189,20 @@ struct LinkImportResultView: View {
 
     private var actionButtons: some View {
         HStack(spacing: 14) {
-            primaryButton(title: "立即开锅！", systemImage: "flame.fill") {
-                onCook(selectedRecipes)
+            // 高亮主按钮：收进菜谱库（红色）
+            primaryButton(title: "收进菜谱库", systemImage: "book.fill") {
+                onSave(selectedRecipes)
             }
 
+            // 次要按钮：立即开锅（浅色背景）
             secondaryButton(
-                title: "收进菜谱库",
-                systemImage: "book.fill",
+                title: "立即开锅",
+                systemImage: "flame.fill",
                 background: Color.white,
                 foreground: Color.orange600,
                 isDisabled: false
             ) {
-                onSave(selectedRecipes)
+                onCook(selectedRecipes)
             }
         }
         .disabled(selectedRecipes.isEmpty)

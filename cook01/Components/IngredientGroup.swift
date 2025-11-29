@@ -5,35 +5,27 @@ struct IngredientGroup: View {
     let items: [Ingredient]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: UIStyle.Spacing.md) {
+            // 分类标题（浅灰色）
             Text(category)
                 .font(.headline)
-                .foregroundStyle(Color.orange600)
+                .foregroundStyle(Color.gray500)
 
-            VStack(spacing: 10) {
+            VStack(spacing: UIStyle.Spacing.sm + 2) {
                 ForEach(items) { ingredient in
                     HStack {
                         Text(ingredient.name)
-                            .foregroundStyle(Color.gray700)
+                            .foregroundStyle(Color.gray800)
                         Spacer()
                         Text(ingredient.amount)
-                            .foregroundStyle(Color.orange600)
+                            .foregroundStyle(Color.gray600)
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.orange50)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .padding(.horizontal, UIStyle.Padding.md + 2)
+                    .padding(.vertical, UIStyle.Spacing.sm + 2)
                 }
             }
         }
-        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.gray300, lineWidth: 1)
-        )
     }
 }
 

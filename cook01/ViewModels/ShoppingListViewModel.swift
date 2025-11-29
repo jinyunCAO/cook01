@@ -159,7 +159,7 @@ final class ShoppingListViewModel: ObservableObject {
             itemStates[key] = false
         }
     }
-    
+
     func removeRecipe(id: String) {
         guard let index = recipeItems.firstIndex(where: { $0.recipeId == id }) else { return }
         

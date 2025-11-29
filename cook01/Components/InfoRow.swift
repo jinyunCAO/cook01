@@ -6,7 +6,7 @@ struct InfoRow: View {
     let tint: Color
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: UIStyle.Spacing.xs + 2) {
             Image(systemName: icon)
                 .font(.caption)
                 .foregroundStyle(tint)
@@ -14,8 +14,8 @@ struct InfoRow: View {
                 .font(.caption)
                 .foregroundStyle(tint)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, UIStyle.Spacing.sm + 2)
+        .padding(.vertical, UIStyle.Spacing.xs + 2)
         .background(tint.opacity(0.15))
         .clipShape(Capsule())
     }

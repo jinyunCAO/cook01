@@ -9,7 +9,7 @@ struct SwipeableShoppingRecipeCard: View {
     let onDelete: () -> Void
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: UIStyle.Shopping.cardSpacing) {
             HStack {
                 Button {
                     onRecipeTap()
@@ -20,20 +20,20 @@ struct SwipeableShoppingRecipeCard: View {
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                HStack(spacing: 8) {
+                HStack(spacing: UIStyle.Spacing.sm) {
                     Text("\(recipe.items.count) 项")
                         .font(.caption)
                         .foregroundStyle(Color.gray500)
                     Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        withAnimation(.spring(response: UIStyle.Delete.animationResponse, dampingFraction: UIStyle.Delete.animationDamping)) {
                             onDelete()
                         }
                     } label: {
                         Image(systemName: "trash")
                             .font(.caption)
                             .foregroundStyle(Color.red)
-                            .padding(6)
-                            .background(Color.red.opacity(0.1))
+                            .padding(UIStyle.Shopping.deleteButtonPadding)
+                            .background(Color.red.opacity(UIStyle.Shopping.deleteButtonOpacity))
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
@@ -43,37 +43,37 @@ struct SwipeableShoppingRecipeCard: View {
                 shoppingRow(item: item, checked: itemStates[item.id] ?? false, metadata: recipe.recipeName)
             }
         }
-        .padding(20)
+        .padding(UIStyle.Shopping.cardPadding)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.gray300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous)
+                .stroke(Color.gray300, lineWidth: UIStyle.Border.width)
         )
     }
     
     private func shoppingRow(item: RawShoppingItem, checked: Bool, metadata: String?) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: UIStyle.Shopping.rowSpacing) {
             Button {
                 onItemToggle(item.id)
             } label: {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(checked ? Color.green400 : Color.white)
-                    .frame(width: 28, height: 28)
+                RoundedRectangle(cornerRadius: UIStyle.CornerRadius.small, style: .continuous)
+                    .fill(checked ? Color.darkRed : Color.white)
+                    .frame(width: UIStyle.Shopping.checkboxSize, height: UIStyle.Shopping.checkboxSize)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(checked ? Color.green400 : Color.orange300, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: UIStyle.CornerRadius.small, style: .continuous)
+                            .stroke(checked ? Color.darkRed : Color.orange300, lineWidth: UIStyle.Shopping.checkboxBorderWidth)
                     )
                     .overlay(
                         Image(systemName: "checkmark")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: UIStyle.Shopping.checkboxIconSize, weight: .bold))
                             .foregroundStyle(Color.white)
                             .opacity(checked ? 1 : 0)
                     )
             }
             .buttonStyle(.plain)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: UIStyle.Spacing.xs) {
                 Text(item.name)
                     .font(.subheadline)
                     .foregroundStyle(checked ? Color.gray400 : Color.gray800)
@@ -88,19 +88,19 @@ struct SwipeableShoppingRecipeCard: View {
             if let metadata {
                 Text(metadata)
                     .font(.caption2)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, UIStyle.Shopping.metadataPaddingH)
+                    .padding(.vertical, UIStyle.Shopping.metadataPaddingV)
                     .background(Color.orange50)
                     .foregroundStyle(Color.orange600)
                     .clipShape(Capsule())
             }
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 14)
+        .padding(.vertical, UIStyle.Shopping.rowPaddingV)
+        .padding(.horizontal, UIStyle.Shopping.rowPaddingH)
         .background(
-            checked ? Color.green400.opacity(0.12) : Color.orange50
+            checked ? Color.darkRed.opacity(0.12) : Color.orange50
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: UIStyle.CornerRadius.large, style: .continuous))
     }
 }
 
@@ -214,7 +214,7 @@ struct ShoppingListView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 24)
-            .padding(.bottom, 40)
+            .padding(.bottom, 100)  // 增加底部 padding，确保内容可以滚动到导航栏下方
         }
     }
 
@@ -262,21 +262,21 @@ struct ShoppingListView: View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark.seal.fill")
-                    .foregroundStyle(Color.green400)
+                    .foregroundStyle(Color.darkRed)
                 Text("🎉 太棒了，已买齐所有食材！")
                     .font(.headline)
                     .foregroundStyle(Color.gray800)
                 Spacer()
             }
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
-                    viewModel.clearAll()
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                        viewModel.clearAll()
+                    }
+                } label: {
+                    Label("清空清单", systemImage: "trash")
+                        .frame(maxWidth: .infinity)
                 }
-            } label: {
-                Label("清空清单", systemImage: "trash")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(LightButtonStyle())
+                .buttonStyle(LightButtonStyle())
         }
         .padding(20)
         .background(Color.white)
@@ -356,7 +356,7 @@ struct ShoppingListView: View {
                     recipe: recipe,
                     isSelected: viewModel.selectedRecipes.contains(recipe.recipeId),
                     onToggle: {
-                        viewModel.toggleRecipe(id: recipe.recipeId)
+                    viewModel.toggleRecipe(id: recipe.recipeId)
                     },
                     onDelete: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -402,12 +402,12 @@ struct ShoppingListView: View {
 
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
-                    Capsule()
+                Capsule()
                         .fill(Color.gray300)
                     
-                    Capsule()
+                        Capsule()
                         .fill(Color.orange500)
-                        .frame(width: proxy.size.width * viewModel.progress)
+                            .frame(width: proxy.size.width * viewModel.progress)
                 }
             }
             .frame(height: 8)
@@ -415,7 +415,7 @@ struct ShoppingListView: View {
             if viewModel.progress >= 1 {
                 Text("🎉 太棒了！全部采购完成！")
                     .font(.subheadline.weight(.medium))
-                    .foregroundStyle(Color.green400)
+                    .foregroundStyle(Color.darkRed)
                     .transition(.opacity)
             }
         }
@@ -441,15 +441,15 @@ struct ShoppingListView: View {
                             viewModel.toggleItem(id: itemId)
                         },
                         onRecipeTap: {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
-                                viewModel.filterRecipeId = recipe.recipeId
-                            }
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                                    viewModel.filterRecipeId = recipe.recipeId
+                                }
                         },
                         onDelete: {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 viewModel.removeRecipe(id: recipe.recipeId)
-                            }
                         }
+                    }
                     )
                 }
             }
@@ -485,11 +485,11 @@ struct ShoppingListView: View {
                 viewModel.toggleItem(id: item.id)
             } label: {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(checked ? Color.green400 : Color.white)
+                    .fill(checked ? Color.darkRed : Color.white)
                     .frame(width: 28, height: 28)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(checked ? Color.green400 : Color.orange300, lineWidth: 2)
+                            .stroke(checked ? Color.darkRed : Color.orange300, lineWidth: 2)
                     )
                     .overlay(
                         Image(systemName: "checkmark")
@@ -525,7 +525,7 @@ struct ShoppingListView: View {
         .padding(.vertical, 10)
         .padding(.horizontal, 14)
         .background(
-            checked ? Color.green400.opacity(0.12) : Color.orange50
+            checked ? Color.darkRed.opacity(0.12) : Color.orange50
         )
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
@@ -536,11 +536,11 @@ struct ShoppingListView: View {
                 viewModel.toggleItem(id: item.id)
             } label: {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(item.checked ? Color.green400 : Color.white)
+                    .fill(item.checked ? Color.darkRed : Color.white)
                     .frame(width: 28, height: 28)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(item.checked ? Color.green400 : Color.orange300, lineWidth: 2)
+                            .stroke(item.checked ? Color.darkRed : Color.orange300, lineWidth: 2)
                     )
                     .overlay(
                         Image(systemName: "checkmark")
@@ -572,7 +572,7 @@ struct ShoppingListView: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
-        .background(item.checked ? Color.green400.opacity(0.12) : Color.orange50)
+        .background(item.checked ? Color.darkRed.opacity(0.12) : Color.orange50)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
